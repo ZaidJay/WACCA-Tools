@@ -1,5 +1,6 @@
 import math
 import tkinter as tk
+import easings 
 from tkinter import Canvas, Text, ttk
 
 def time_add(beat1,tick1,beat2,tick2):
@@ -14,18 +15,56 @@ def time_add(beat1,tick1,beat2,tick2):
             beat+=1
     return beat,tick
 
+def locdistance(x,y):
+    distance=min([abs(x-y),60-abs(x-y)])
+    return distance
+
 class App(ttk.Frame):
     def __init__(self, parent):
         ttk.Frame.__init__(self)
         #状态
         self.state="Hold Divider"        #Hold Divider Mirror Offset
         #Hold Divider 参数
-        self.hold_type=["s","没做","没做","没做","没做"]
+        self.hold_type=[
+            "Linear",
+            "InSine",
+            "OutSine",
+            "InOutSine",
+            "InQuad",
+            "OutQuad",
+            "InOutQuad",
+            "InCubic",
+            "OutCubic",
+            "InOutCubic",
+            "InQuart",
+            "OutQuart",
+            "InOutQuart",
+            "InQuint",
+            "OutQuint",
+            "InOutQuint",
+            "InExpo",
+            "OutExpo",
+            "InOutExpo",
+            "InCric",
+            "OutCric",
+            "InOutCric",
+            "InBack",
+            "OutBack",
+            "InOutBack",
+            "InElastic",
+            "OutElastic",
+            "InOutElastic",
+            "InBounce",
+            "OutBounce",
+            "InOutBounce",
+            "Bezier"
+        ]
         #Mirror 参数
         self.slidechange={5:7,6:8,7:5,8:6,23:24,24:23}
         self.middle=89
         self.middle_var=tk.DoubleVar(value=44.5)
         self.img=tk.PhotoImage(file="resource/track.png")
+        #Hold Editer
 
         self.bind_all('<KeyPress>',self.listen_keyboard)
         self.setup_widgets()
@@ -48,20 +87,27 @@ class App(ttk.Frame):
         self.offset = ttk.Frame(self.choice_bar)
         self.setup_offset(self.offset)
         self.choice_bar.add(self.offset,text="Offset")
-
+        #Hold Editer
+        self.hold_editer = ttk.Frame(self.choice_bar)
+        self.setup_hold_eidter(self.hold_editer)
+        self.choice_bar.add(self.hold_editer,text="Hold Editer")
+    
     #窗口状态更新
     def update_state(self,event):
         self.state=self.choice_bar.tab(self.choice_bar.select())['text']
     
     #键盘监听
     def listen_keyboard(self,event):
-        if event.char == '\r':
+        if event.keycode == 13: #enter
             if self.state == "Hold Divider":
                 self.HOLD_DIVIDER()
             elif self.state == "Mirror":
                 self.MIRROR()
             elif self.state == "Offset":
                 self.OFFSET()
+        if event.keycode == 46: #del
+            if self.state == "Hold Editer":
+                self.Hold_Delete()
 
 ######################################################################################################################
     #Hold Divider 部分
@@ -251,7 +297,6 @@ class App(ttk.Frame):
     def setup_mirror(self,frame):
         #选择区域
         frame.select_part=ttk.Frame(frame,padding=(0, 10, 0, 0))
-
         frame.select_part.grid(row=0, column=0, padx=2, pady=5, sticky="nw")
         #滑动条
         frame.select_scale=ttk.Scale(
@@ -357,7 +402,7 @@ class App(ttk.Frame):
                         elements[3] = self.slidechange[elements[3]]
                         elements[4]=elements[4]+d_number
                         elements[5]=(self.middle-elements[6]-elements[5]+1)%60
-                    elif elements[3] == 14:#mask
+                    elif elements[3] in [12,13]:#mask
                         elements[4]=elements[4]+d_number
                     else:
                         elements[4]=elements[4]+d_number
@@ -468,13 +513,234 @@ class App(ttk.Frame):
         self.offset.output_text.delete('0.0','end')
         self.offset.output_text.insert('0.0',"\n".join(output))
 ################################################################################################
+    #Hold Editer 部分
+    def setup_hold_eidter(self,frame):
+        frame.table = ttk.Treeview(
+            frame,
+            height=10,
+            style="Treeview",
+            columns=("startt","endt","startl","endl","startw","endw","easing","next")
+            )
+        frame.table.grid(row=0, column=0,padx=0, sticky="nw",rowspan=9)
+        frame.table.bind("<Button-1>",self.Table_Update)
+        namelist=["开始时间","结束时间","开始位置","结束位置","开始宽度","结束宽度","缓动","连接序号"]
+        
+        for i in range(8):
+            frame.table.heading(frame.table["columns"][i],text=namelist[i])
+
+        for i in frame.table["columns"]:
+            frame.table.column(i,width=55,anchor='center')
+        frame.table.heading("#0",text="序号")
+        frame.table.column("#0",width=55,anchor='center')
+    
+        frame.number_label = ttk.Label(frame,text="序号:")
+        frame.number_label.grid(row=0,column=1,padx=0)
+        frame.number_text = Text(frame,width=10,height=1)
+        frame.number_text.grid(row=0,column=2,padx=0)
+        frame.startt_label = ttk.Label(frame,text="开始时间:")
+        frame.startt_label.grid(row=1,column=1,padx=0)
+        frame.startt_text = Text(frame,width=10,height=1)
+        frame.startt_text.grid(row=1,column=2,padx=0)
+        frame.endt_label = ttk.Label(frame,text="结束时间")
+        frame.endt_label.grid(row=2,column=1,padx=0)
+        frame.endt_text = Text(frame,width=10,height=1)
+        frame.endt_text.grid(row=2,column=2,padx=0)
+        frame.startl_label = ttk.Label(frame,text="开始位置:")
+        frame.startl_label.grid(row=3,column=1,padx=0)
+        frame.startl_text = Text(frame,width=10,height=1)
+        frame.startl_text.grid(row=3,column=2,padx=0)
+        frame.endl_label = ttk.Label(frame,text="结束位置:")
+        frame.endl_label.grid(row=4,column=1,padx=0)
+        frame.endl_text = Text(frame,width=10,height=1)
+        frame.endl_text.grid(row=4,column=2,padx=0)
+        frame.startw_label = ttk.Label(frame,text="开始宽度:")
+        frame.startw_label.grid(row=5,column=1,padx=0)
+        frame.startw_text = Text(frame,width=10,height=1)
+        frame.startw_text.grid(row=5,column=2,padx=0)
+        frame.endw_label = ttk.Label(frame,text="结束宽度:")
+        frame.endw_label.grid(row=6,column=1,padx=0)
+        frame.endw_text = Text(frame,width=10,height=1)
+        frame.endw_text.grid(row=6,column=2,padx=0)
+        frame.easing_label = ttk.Label(frame,text="缓动:")
+        frame.easing_label.grid(row=7,column=1,padx=0)
+        frame.easing_text = ttk.Combobox(frame,values=self.hold_type,width=8,state="readonly")
+        frame.easing_text.grid(row=7,column=2,padx=0)
+        frame.next_label = ttk.Label(frame,text="连接序号:")
+        frame.next_label.grid(row=8,column=1,padx=0)
+        frame.next_text = Text(frame,width=10,height=1)
+        frame.next_text.grid(row=8,column=2,padx=0)
+        
+        frame.addbutton=ttk.Button(frame,text="修改",width=15,command=self.Hold_Modify)
+        frame.addbutton.grid(row=10,column=1,columnspan=2,pady=1)
+
+        frame.addbutton=ttk.Button(frame,text="增加",width=15,command=self.Hold_Add)
+        frame.addbutton.grid(row=11,column=1,columnspan=2,pady=1)
+
+        frame.addbutton=ttk.Button(frame,text="删除",width=15,command=self.Hold_Delete)
+        frame.addbutton.grid(row=12,column=1,columnspan=2,pady=1)
+
+        frame.commitbutton=ttk.Button(frame,text="生成",width=15,command=self.HOLD_EDITER)
+        frame.commitbutton.grid(row=13,column=1,columnspan=2,pady=1)
+
+        frame.output = Text(frame,width=77,height=9)
+        frame.output.insert('end','Output.')
+        frame.output.grid(row=10,column=0,rowspan=5,pady=1) 
+
+        frame.density_label = ttk.Label(frame,text="启用间隔:")
+        frame.density_label.grid(row=14,column=1,pady=1)
+        frame.density_text = Text(frame,width=10,height=1)
+        frame.density_text.insert('end','15')
+        frame.density_text.grid(row=14,column=2,pady=1)
+
+    def Table_Update(self,event):
+        selected_items = self.hold_editer.table.selection()
+        if len(selected_items) != 0:
+            item = self.hold_editer.table.item(selected_items[0])
+            self.hold_editer.number_text.delete('0.0','end')
+            self.hold_editer.number_text.insert('0.0',item['text'])
+            self.hold_editer.startt_text.delete('0.0','end')
+            self.hold_editer.startt_text.insert('0.0',item['values'][0])
+            self.hold_editer.endt_text.delete('0.0','end')
+            self.hold_editer.endt_text.insert('0.0',item['values'][1])
+            self.hold_editer.startl_text.delete('0.0','end')
+            self.hold_editer.startl_text.insert('0.0',item['values'][2])
+            self.hold_editer.endl_text.delete('0.0','end')
+            self.hold_editer.endl_text.insert('0.0',item['values'][3])
+            self.hold_editer.startw_text.delete('0.0','end')
+            self.hold_editer.startw_text.insert('0.0',item['values'][4])
+            self.hold_editer.endw_text.delete('0.0','end')
+            self.hold_editer.endw_text.insert('0.0',item['values'][5])
+            self.hold_editer.easing_text.set(item['values'][6])
+            self.hold_editer.next_text.delete('0.0','end')
+            self.hold_editer.next_text.insert('0.0',item['values'][7])
+
+    def Hold_Add(self):
+        number = self.hold_editer.number_text.get('0.0','end').strip()
+        startt = self.hold_editer.startt_text.get('0.0','end').strip()
+        endt = self.hold_editer.endt_text.get('0.0','end').strip()
+        startl = self.hold_editer.startl_text.get('0.0','end').strip()
+        endl = self.hold_editer.endl_text.get('0.0','end').strip()
+        startw = self.hold_editer.startw_text.get('0.0','end').strip()
+        endw = self.hold_editer.endw_text.get('0.0','end').strip()
+        easing = self.hold_editer.easing_text.get().strip()
+        next = self.hold_editer.next_text.get('0.0','end').strip()
+        self.hold_editer.table.insert("",tk.END,text=number,values=(startt,endt,startl,endl,startw,endw,easing,next))
+        
+    def Hold_Delete(self):
+        selected_items = self.hold_editer.table.selection()
+        for item in selected_items:
+            self.hold_editer.table.delete(item)
+    
+    def Hold_Modify(self):
+        number = self.hold_editer.number_text.get('0.0','end').strip()
+        startt = self.hold_editer.startt_text.get('0.0','end').strip()
+        endt = self.hold_editer.endt_text.get('0.0','end').strip()
+        startl = self.hold_editer.startl_text.get('0.0','end').strip()
+        endl = self.hold_editer.endl_text.get('0.0','end').strip()
+        startw = self.hold_editer.startw_text.get('0.0','end').strip()
+        endw = self.hold_editer.endw_text.get('0.0','end').strip()
+        easing = self.hold_editer.easing_text.get().strip()
+        next = self.hold_editer.next_text.get('0.0','end').strip()
+        selected_items = self.hold_editer.table.selection()
+        for item in selected_items:
+            self.hold_editer.table.item(item,text=number,values=(startt,endt,startl,endl,startw,endw,easing,next))
+
+    def HOLD_EDITER(self):
+        output=[]
+        holdlist=[]
+        holdgroup={}
+        div=int(self.hold_editer.density_text.get('0.0','end').strip())
+        items = self.hold_editer.table.get_children()
+        for item in items:
+            hold=[]
+            hold.append(self.hold_editer.table.item(item)['text'])
+            for i in range(8):
+                hold.append(str(self.hold_editer.table.item(item)['values'][i]))
+            holdlist.append(hold)
+
+        number = int(holdlist[0][0])
+
+        holdlist.sort(reverse=True)
+        while len(holdlist):
+            if holdlist[0][8] == "":
+                holdgroup[holdlist[0][0]] = []
+                holdgroup[holdlist[0][0]].append(holdlist.pop(0))
+            else:
+                if holdlist[0][8] in holdgroup.keys():
+                    holdgroup[holdlist[0][8]].insert(0,holdlist[0])
+                    holdgroup[holdlist[0][0]]=holdgroup.pop(holdlist[0][8])
+                    holdlist.pop(0)
+                else:
+                    holdgroup[holdlist[0][0]] = []
+                    holdgroup[holdlist[0][0]].append(holdlist.pop(0))
+        holdlist.clear()
+
+        for i,holdlist in holdgroup.items():
+            for h in range(len(holdlist)):
+                hold=holdlist[h]
+                sb,st=hold[1].split(" ")
+                st_a,st_b=st.split("/")
+                sb,st_a,st_b=int(sb),int(st_a),int(st_b)
+                if st_a == st_b and st_b == 0: st_b=1
+                st=sb*1920+1920*(st_a/st_b)
+                    
+                eb,et=hold[2].split(" ")
+                et_a,et_b=et.split("/")
+                eb,et_a,et_b=int(eb),int(et_a),int(et_b)
+                if et_a == et_b and et_b == 0: et_b=1
+                et=eb*1920+1920*(et_a/et_b)
+                
+                sl,el,sw,ew=int(hold[3]),int(hold[4]),int(hold[5]),int(hold[6])
+                easing = 'ease'+hold[7]
+                holddetailmap=[]
+                dl=el-sl;dw=ew-sw
+                temploc=1
+                if abs(dl)>=abs(dw) : temploc=1
+                else: temploc=2
+                now=-114514
+                for i in range(int(st),int(et)+1):
+                    holddetail = [i,sl+int(easings.calculate(0,el-sl,(i-st)/(et-st),easing)),sw+int(easings.calculate(0,ew-sw,(i-st)/(et-st),easing))]
+                    if holddetail[temploc] == now and i != int(et): continue
+                    else: holddetailmap.append(holddetail); now = holddetail[temploc]
+
+                lastflagpoint=0
+                for i in range(len(holddetailmap)):
+                    flag=0
+                    type=10
+                    if i == 0 and h == 0: type=9
+                    if i == len(holddetailmap)-1 and h != len(holdlist) - 1: continue
+                    if i == 0 or i == len(holddetailmap)-1:
+                        flag=1
+                        lastflagpoint=holddetailmap[i][1]
+                    elif locdistance(holddetailmap[i][1],lastflagpoint)>= div:
+                        flag=1
+                        lastflagpoint=holddetailmap[i][1]
+                    
+
+                    beat,tick = time_add(0,0,0,holddetailmap[i][0])
+                    loc = holddetailmap[i][1]%60
+                    width = holddetailmap[i][2]
+                    event=1
+                    if hold[8] == "" and i == len(holddetailmap)-1:
+                        text="{:>4s} {:>4s} {:>4s} {:>4s} {:>4s} {:>4s} {:>4s} {:>4s}".format(str(beat),str(tick),str(event),str(11),str(number),str(loc),str(width),str(flag))
+                    else:
+                        text="{:>4s} {:>4s} {:>4s} {:>4s} {:>4s} {:>4s} {:>4s} {:>4s} {:>4s}".format(str(beat),str(tick),str(event),str(type),str(number),str(loc),str(width),str(flag),str(number+1))
+                    number=number+1
+                    output.append(text)
+
+                holddetailmap.clear()
+
+        self.hold_editer.output.delete('0.0','end')
+        self.hold_editer.output.insert('0.0','\n'.join(output))
+        
+
 if __name__ == "__main__":
     mainframe = tk.Tk()
     mainframe.title("WACCA Tools")
     mainframe.iconbitmap("resource/wacca reverse.ico")
-    mainframe.geometry('625x475')
-    mainframe.maxsize(625,475)
-    mainframe.minsize(625,475)
+    mainframe.geometry('685x475')
+    #mainframe.maxsize(625,475)
+    mainframe.minsize(685,475)
 
     # Simply set the theme
     mainframe.tk.call("source", "azure.tcl")

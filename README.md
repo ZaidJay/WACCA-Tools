@@ -20,3 +20,9 @@ It can help you reverse Object
 It can help you change the time and number of the object
 
 可以帮助你修改物件的延迟与编号
+
+## Hold Eidter / Hold 编辑
+
+It can help you to draw a continuous easing hold
+
+可以帮助画一个连贯的，自选缓动的hold

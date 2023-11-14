@@ -75,10 +75,10 @@ class App(ttk.Frame):
         self.choice_bar = ttk.Notebook(self)
         self.choice_bar.pack(fill="both", expand=True)
         self.choice_bar.bind_all('<Button-1>',self.update_state)
-        #Hold Divider
-        self.hold_divider = ttk.Frame(self.choice_bar)
-        self.setup_hold_divider(self.hold_divider)
-        self.choice_bar.add(self.hold_divider, text="Hold Divider")
+        #Hold Editer
+        self.hold_editer = ttk.Frame(self.choice_bar)
+        self.setup_hold_eidter(self.hold_editer)
+        self.choice_bar.add(self.hold_editer,text="Hold Editer")
         #Mirror
         self.mirror = ttk.Frame(self.choice_bar)
         self.setup_mirror(self.mirror)
@@ -87,10 +87,13 @@ class App(ttk.Frame):
         self.offset = ttk.Frame(self.choice_bar)
         self.setup_offset(self.offset)
         self.choice_bar.add(self.offset,text="Offset")
-        #Hold Editer
-        self.hold_editer = ttk.Frame(self.choice_bar)
-        self.setup_hold_eidter(self.hold_editer)
-        self.choice_bar.add(self.hold_editer,text="Hold Editer")
+
+        #waste function
+        #Hold Divider
+        #self.hold_divider = ttk.Frame(self.choice_bar)
+        #self.setup_hold_divider(self.hold_divider)
+        #self.choice_bar.add(self.hold_divider, text="Hold Divider")
+
     
     #窗口状态更新
     def update_state(self,event):
@@ -99,8 +102,8 @@ class App(ttk.Frame):
     #键盘监听
     def listen_keyboard(self,event):
         if event.keycode == 13: #enter
-            if self.state == "Hold Divider":
-                self.HOLD_DIVIDER()
+            if self.state == "Hold Editer":
+                self.HOLD_EDITER()
             elif self.state == "Mirror":
                 self.MIRROR()
             elif self.state == "Offset":
@@ -110,188 +113,190 @@ class App(ttk.Frame):
                 self.Hold_Delete()
 
 ######################################################################################################################
-    #Hold Divider 部分
-    def setup_hold_divider(self,frame):
-        #时间部分:
-        #区域
-        frame.time_part=ttk.LabelFrame(frame,text="time")
-        frame.time_part.grid(row=0,column=0,sticky="wn",padx=2,pady=2)
-        #起始时间
-        frame.start_time_label=ttk.Label(frame.time_part,text="start time:")
-        frame.start_time_label.grid(row=0,column=0,sticky="w",pady=2)
-        frame.start_time_entry=ttk.Entry(frame.time_part,state="normal",width=10)
-        frame.start_time_entry.insert(0,"like 1 8/16")
-        frame.start_time_entry.grid(row=0,column=1,sticky="w",pady=2)
-        #结束时间
-        frame.end_time_label=ttk.Label(frame.time_part,text="end time:")
-        frame.end_time_label.grid(row=1,column=0,sticky="w",pady=2)
-        frame.end_time_entry=ttk.Entry(frame.time_part,state="normal",width=10)
-        frame.end_time_entry.insert(0,"like 2 0/16")
-        frame.end_time_entry.grid(row=1,column=1,sticky="w",pady=2)
-        #开始编号
-        frame.number_label=ttk.Label(frame.time_part,text="start number:")
-        frame.number_label.grid(row=2,column=0,sticky="w",pady=2)
-        frame.number_entry=ttk.Entry(frame.time_part,state="normal",width=10)
-        frame.number_entry.insert(0,"int≥0")
-        frame.number_entry.grid(row=2,column=1,sticky="w",pady=2)
 
-        #hold部分
-        #区域
-        frame.hold_part=ttk.LabelFrame(frame,text="hold information")
-        frame.hold_part.grid(row=1,column=0,sticky="wn",padx=2,pady=2)
-        #起始位置
-        frame.start_hold_loc_label=ttk.Label(frame.hold_part,text="start location:")
-        frame.start_hold_loc_label.grid(row=0,column=0,sticky="w",pady=2)
-        frame.start_hold_loc_entry=ttk.Entry(frame.hold_part,state="normal",width=10)
-        frame.start_hold_loc_entry.insert(0,"int∈R")
-        frame.start_hold_loc_entry.grid(row=0,column=1,sticky="w",pady=2)
-        #结束位置
-        frame.end_hold_loc_label=ttk.Label(frame.hold_part,text="end location:")
-        frame.end_hold_loc_label.grid(row=1,column=0,sticky="w",pady=2)
-        frame.end_hold_loc_entry=ttk.Entry(frame.hold_part,state="normal",width=10)
-        frame.end_hold_loc_entry.insert(0,"int∈R")
-        frame.end_hold_loc_entry.grid(row=1,column=1,sticky="w",pady=2)
-        #起始宽度
-        frame.start_hold_width_label=ttk.Label(frame.hold_part,text="start width:")
-        frame.start_hold_width_label.grid(row=2,column=0,sticky="w",pady=2)
-        frame.start_hold_width_entry=ttk.Entry(frame.hold_part,state="normal",width=10)
-        frame.start_hold_width_entry.insert(0,"int≥2")
-        frame.start_hold_width_entry.grid(row=2,column=1,sticky="w",pady=2)        
-        #结束宽度
-        frame.end_hold_width_label=ttk.Label(frame.hold_part,text="end width:")
-        frame.end_hold_width_label.grid(row=3,column=0,sticky="w",pady=2)
-        frame.end_hold_width_entry=ttk.Entry(frame.hold_part,state="normal",width=10)
-        frame.end_hold_width_entry.insert(0,"int≥1")
-        frame.end_hold_width_entry.grid(row=3,column=1,sticky="w",pady=2)
-        #hold类型
-        frame.hold_type_label=ttk.Label(frame.hold_part,text="hold type:")
-        frame.hold_type_label.grid(row=4,column=0,sticky="w",pady=2)
-        frame.hold_type_box=ttk.Combobox(frame.hold_part,values=self.hold_type,width=10,state="readonly")
-        frame.hold_type_box.current(0)
-        frame.hold_type_box.grid(row=4,column=1,sticky="w",pady=2)
+    # #Hold Divider 部分
+    # def setup_hold_divider(self,frame):
+    #     #时间部分:
+    #     #区域
+    #     frame.time_part=ttk.LabelFrame(frame,text="time")
+    #     frame.time_part.grid(row=0,column=0,sticky="wn",padx=2,pady=2)
+    #     #起始时间
+    #     frame.start_time_label=ttk.Label(frame.time_part,text="start time:")
+    #     frame.start_time_label.grid(row=0,column=0,sticky="w",pady=2)
+    #     frame.start_time_entry=ttk.Entry(frame.time_part,state="normal",width=10)
+    #     frame.start_time_entry.insert(0,"like 1 8/16")
+    #     frame.start_time_entry.grid(row=0,column=1,sticky="w",pady=2)
+    #     #结束时间
+    #     frame.end_time_label=ttk.Label(frame.time_part,text="end time:")
+    #     frame.end_time_label.grid(row=1,column=0,sticky="w",pady=2)
+    #     frame.end_time_entry=ttk.Entry(frame.time_part,state="normal",width=10)
+    #     frame.end_time_entry.insert(0,"like 2 0/16")
+    #     frame.end_time_entry.grid(row=1,column=1,sticky="w",pady=2)
+    #     #开始编号
+    #     frame.number_label=ttk.Label(frame.time_part,text="start number:")
+    #     frame.number_label.grid(row=2,column=0,sticky="w",pady=2)
+    #     frame.number_entry=ttk.Entry(frame.time_part,state="normal",width=10)
+    #     frame.number_entry.insert(0,"int≥0")
+    #     frame.number_entry.grid(row=2,column=1,sticky="w",pady=2)
 
-        #确认
-        frame.commit_button=ttk.Button(frame,text="run",width=21,command=self.HOLD_DIVIDER)
-        frame.commit_button.grid(row=2,column=0,sticky="wn",padx=2,pady=2)
+    #     #hold部分
+    #     #区域
+    #     frame.hold_part=ttk.LabelFrame(frame,text="hold information")
+    #     frame.hold_part.grid(row=1,column=0,sticky="wn",padx=2,pady=2)
+    #     #起始位置
+    #     frame.start_hold_loc_label=ttk.Label(frame.hold_part,text="start location:")
+    #     frame.start_hold_loc_label.grid(row=0,column=0,sticky="w",pady=2)
+    #     frame.start_hold_loc_entry=ttk.Entry(frame.hold_part,state="normal",width=10)
+    #     frame.start_hold_loc_entry.insert(0,"int∈R")
+    #     frame.start_hold_loc_entry.grid(row=0,column=1,sticky="w",pady=2)
+    #     #结束位置
+    #     frame.end_hold_loc_label=ttk.Label(frame.hold_part,text="end location:")
+    #     frame.end_hold_loc_label.grid(row=1,column=0,sticky="w",pady=2)
+    #     frame.end_hold_loc_entry=ttk.Entry(frame.hold_part,state="normal",width=10)
+    #     frame.end_hold_loc_entry.insert(0,"int∈R")
+    #     frame.end_hold_loc_entry.grid(row=1,column=1,sticky="w",pady=2)
+    #     #起始宽度
+    #     frame.start_hold_width_label=ttk.Label(frame.hold_part,text="start width:")
+    #     frame.start_hold_width_label.grid(row=2,column=0,sticky="w",pady=2)
+    #     frame.start_hold_width_entry=ttk.Entry(frame.hold_part,state="normal",width=10)
+    #     frame.start_hold_width_entry.insert(0,"int≥2")
+    #     frame.start_hold_width_entry.grid(row=2,column=1,sticky="w",pady=2)        
+    #     #结束宽度
+    #     frame.end_hold_width_label=ttk.Label(frame.hold_part,text="end width:")
+    #     frame.end_hold_width_label.grid(row=3,column=0,sticky="w",pady=2)
+    #     frame.end_hold_width_entry=ttk.Entry(frame.hold_part,state="normal",width=10)
+    #     frame.end_hold_width_entry.insert(0,"int≥1")
+    #     frame.end_hold_width_entry.grid(row=3,column=1,sticky="w",pady=2)
+    #     #hold类型
+    #     frame.hold_type_label=ttk.Label(frame.hold_part,text="hold type:")
+    #     frame.hold_type_label.grid(row=4,column=0,sticky="w",pady=2)
+    #     frame.hold_type_box=ttk.Combobox(frame.hold_part,values=self.hold_type,width=10,state="readonly")
+    #     frame.hold_type_box.current(0)
+    #     frame.hold_type_box.grid(row=4,column=1,sticky="w",pady=2)
 
-        #信息栏
-        frame.info_text=Text(frame,state="normal",width=60)
-        frame.info_text.insert('0.0',chars="hello,i'm emu otori.")
-        frame.info_text.configure(state='disabled')
-        frame.info_text.grid(row=0,column=1,sticky="wnes",padx=5,pady=2,rowspan=3)
+    #     #确认
+    #     frame.commit_button=ttk.Button(frame,text="run",width=21,command=self.HOLD_DIVIDER)
+    #     frame.commit_button.grid(row=2,column=0,sticky="wn",padx=2,pady=2)
+
+    #     #信息栏
+    #     frame.info_text=Text(frame,state="normal",width=60)
+    #     frame.info_text.insert('0.0',chars="hello,i'm emu otori.")
+    #     frame.info_text.configure(state='disabled')
+    #     frame.info_text.grid(row=0,column=1,sticky="wnes",padx=5,pady=2,rowspan=3)
     
-    def HOLD_DIVIDER(self):
-        error_log=[]
-        output=[]
-        try:
-            start_time=self.hold_divider.start_time_entry.get().strip()
-            start_beat,start_tick=start_time.split(" ")
-            start_beat=int(start_beat)
-            a,b=start_tick.split("/")
-            a,b=int(a),int(b)
-            start_tick=int(1920*a/b)
-        except ValueError:
-            error_log.append("Error:invalid start time!")
+    # def HOLD_DIVIDER(self):
+    #     error_log=[]
+    #     output=[]
+    #     try:
+    #         start_time=self.hold_divider.start_time_entry.get().strip()
+    #         start_beat,start_tick=start_time.split(" ")
+    #         start_beat=int(start_beat)
+    #         a,b=start_tick.split("/")
+    #         a,b=int(a),int(b)
+    #         start_tick=int(1920*a/b)
+    #     except ValueError:
+    #         error_log.append("Error:invalid start time!")
 
-        try:
-            end_time=self.hold_divider.end_time_entry.get().strip()
-            end_beat,end_tick=end_time.split(" ")
-            end_beat=int(end_beat)
-            a,b=end_tick.split("/")
-            a,b=int(a),int(b)
-            end_tick=int(1920*a/b)
-        except ValueError:
-            error_log.append("Error:invalid end time!")
+    #     try:
+    #         end_time=self.hold_divider.end_time_entry.get().strip()
+    #         end_beat,end_tick=end_time.split(" ")
+    #         end_beat=int(end_beat)
+    #         a,b=end_tick.split("/")
+    #         a,b=int(a),int(b)
+    #         end_tick=int(1920*a/b)
+    #     except ValueError:
+    #         error_log.append("Error:invalid end time!")
         
-        try:
-            number=self.hold_divider.number_entry.get().strip()
-            number=int(number)
-            if number<0:
-                raise ValueError
-        except ValueError:
-            error_log.append("Error:invalid number!")
+    #     try:
+    #         number=self.hold_divider.number_entry.get().strip()
+    #         number=int(number)
+    #         if number<0:
+    #             raise ValueError
+    #     except ValueError:
+    #         error_log.append("Error:invalid number!")
         
-        try:
-            start_hold_loc=self.hold_divider.start_hold_loc_entry.get().strip()
-            start_hold_loc=int(start_hold_loc)
-        except ValueError:
-            error_log.append("Error:invalid start location!")
+    #     try:
+    #         start_hold_loc=self.hold_divider.start_hold_loc_entry.get().strip()
+    #         start_hold_loc=int(start_hold_loc)
+    #     except ValueError:
+    #         error_log.append("Error:invalid start location!")
 
-        try:
-            end_hold_loc=self.hold_divider.end_hold_loc_entry.get().strip()
-            end_hold_loc=int(end_hold_loc)
-        except ValueError:
-            error_log.append("Error:invalid end location!")
+    #     try:
+    #         end_hold_loc=self.hold_divider.end_hold_loc_entry.get().strip()
+    #         end_hold_loc=int(end_hold_loc)
+    #     except ValueError:
+    #         error_log.append("Error:invalid end location!")
 
-        try:
-            start_hold_width=self.hold_divider.start_hold_width_entry.get().strip()
-            start_hold_width=int(start_hold_width)
-            if start_hold_width<2:
-                raise ValueError
-        except ValueError:
-            error_log.append("Error:invalid start width!")
+    #     try:
+    #         start_hold_width=self.hold_divider.start_hold_width_entry.get().strip()
+    #         start_hold_width=int(start_hold_width)
+    #         if start_hold_width<2:
+    #             raise ValueError
+    #     except ValueError:
+    #         error_log.append("Error:invalid start width!")
 
-        try:
-            end_hold_width=self.hold_divider.end_hold_width_entry.get().strip()
-            end_hold_width=int(end_hold_width)
-            if end_hold_width<1:
-                raise ValueError
-        except ValueError:
-            error_log.append("Error:invalid end width!")
+    #     try:
+    #         end_hold_width=self.hold_divider.end_hold_width_entry.get().strip()
+    #         end_hold_width=int(end_hold_width)
+    #         if end_hold_width<1:
+    #             raise ValueError
+    #     except ValueError:
+    #         error_log.append("Error:invalid end width!")
             
-        hold_type=self.hold_divider.hold_type_box.get().strip()
-        if hold_type == "没做":
-            error_log.append("Error:这个hold type以后再来探索吧!")
+    #     hold_type=self.hold_divider.hold_type_box.get().strip()
+    #     if hold_type == "没做":
+    #         error_log.append("Error:这个hold type以后再来探索吧!")
 
-        if len(error_log) != 0:
-            self.hold_divider.info_text.configure(state='normal')
-            self.hold_divider.info_text.delete('0.0','end')
-            for i in error_log: self.hold_divider.info_text.insert('end',chars=(i+'\n'))
-            self.hold_divider.info_text.configure(state='disabled')
-            error_log.clear()
-            return
+    #     if len(error_log) != 0:
+    #         self.hold_divider.info_text.configure(state='normal')
+    #         self.hold_divider.info_text.delete('0.0','end')
+    #         for i in error_log: self.hold_divider.info_text.insert('end',chars=(i+'\n'))
+    #         self.hold_divider.info_text.configure(state='disabled')
+    #         error_log.clear()
+    #         return
         
-        d_loc=end_hold_loc-start_hold_loc        
-        d_width=end_hold_width-start_hold_width
-        #gcd=int(math.gcd(abs(d_loc),abs(d_width)))
-        if d_width==0: d_width=1
-        if d_loc==0: d_loc=1
-        #pace=int((abs(d_loc)*abs(d_width))/gcd)
-        #pace=math.gcd(abs(d_loc),abs(d_width))
-        pace=max(abs(d_loc),abs(d_width))
-        length=1920*(end_beat-start_beat)+end_tick-start_tick
-        num=number
-        event=1
-        for i in range(pace+1):
+    #     d_loc=end_hold_loc-start_hold_loc        
+    #     d_width=end_hold_width-start_hold_width
+    #     #gcd=int(math.gcd(abs(d_loc),abs(d_width)))
+    #     if d_width==0: d_width=1
+    #     if d_loc==0: d_loc=1
+    #     #pace=int((abs(d_loc)*abs(d_width))/gcd)
+    #     #pace=math.gcd(abs(d_loc),abs(d_width))
+    #     pace=max(abs(d_loc),abs(d_width))
+    #     length=1920*(end_beat-start_beat)+end_tick-start_tick
+    #     num=number
+    #     event=1
+    #     for i in range(pace+1):
 
-            d_tick=int(i*length/pace)
-            beat,tick=time_add(start_beat,start_tick,0,d_tick)
-            n0n_ame=0
+    #         d_tick=int(i*length/pace)
+    #         beat,tick=time_add(start_beat,start_tick,0,d_tick)
+    #         n0n_ame=0
             
-            if i == 0 :
-                type=9
-            elif i == pace :
-                type=11
-            else :
-                type=10
+    #         if i == 0 :
+    #             type=9
+    #         elif i == pace :
+    #             type=11
+    #         else :
+    #             type=10
 
-            loc=start_hold_loc+int((end_hold_loc-start_hold_loc)*i/pace)
-            loc=loc%60
-            if loc%15==0 or i==0 or i==pace: n0n_ame=1
-            width=start_hold_width+int((end_hold_width-start_hold_width)*i/pace)
+    #         loc=start_hold_loc+int((end_hold_loc-start_hold_loc)*i/pace)
+    #         loc=loc%60
+    #         if loc%15==0 or i==0 or i==pace: n0n_ame=1
+    #         width=start_hold_width+int((end_hold_width-start_hold_width)*i/pace)
 
-            if i != pace:
-                text="{:>4s} {:>4s} {:>4s} {:>4s} {:>4s} {:>4s} {:>4s} {:>4s} {:>4s}".format(str(beat),str(tick),str(event),str(type),str(num),str(loc),str(width),str(n0n_ame),str(num+1))
-            else:
-                text="{:>4s} {:>4s} {:>4s} {:>4s} {:>4s} {:>4s} {:>4s} {:>4s}".format(str(beat),str(tick),str(event),str(type),str(num),str(loc),str(width),str(n0n_ame))
-            output.append(text)
-            num+=1
-            n0n_ame=0
+    #         if i != pace:
+    #             text="{:>4s} {:>4s} {:>4s} {:>4s} {:>4s} {:>4s} {:>4s} {:>4s} {:>4s}".format(str(beat),str(tick),str(event),str(type),str(num),str(loc),str(width),str(n0n_ame),str(num+1))
+    #         else:
+    #             text="{:>4s} {:>4s} {:>4s} {:>4s} {:>4s} {:>4s} {:>4s} {:>4s}".format(str(beat),str(tick),str(event),str(type),str(num),str(loc),str(width),str(n0n_ame))
+    #         output.append(text)
+    #         num+=1
+    #         n0n_ame=0
         
-        self.hold_divider.info_text.configure(state='normal')
-        self.hold_divider.info_text.delete('0.0','end')
-        for i in output: self.hold_divider.info_text.insert('end',chars=(i+'\n'))
-        self.hold_divider.info_text.configure(state='disabled')
+    #     self.hold_divider.info_text.configure(state='normal')
+    #     self.hold_divider.info_text.delete('0.0','end')
+    #     for i in output: self.hold_divider.info_text.insert('end',chars=(i+'\n'))
+    #     self.hold_divider.info_text.configure(state='disabled')
+
 ######################################################################################################################
     #Mirror 部分
     def setup_mirror(self,frame):
@@ -402,7 +407,12 @@ class App(ttk.Frame):
                         elements[3] = self.slidechange[elements[3]]
                         elements[4]=elements[4]+d_number
                         elements[5]=(self.middle-elements[6]-elements[5]+1)%60
-                    elif elements[3] in [12,13]:#mask
+                    elif elements[3] in [12,13]: #mask
+                        elements[4]=elements[4]+d_number
+                        if elements[8] == 0: elements[8]=1
+                        elif elements[8] == 1: elements[8]=0
+                        elements[5]=(self.middle-elements[6]-elements[5]+1)%60
+                    elif elements[3] in [14]:#END
                         elements[4]=elements[4]+d_number
                     else:
                         elements[4]=elements[4]+d_number
@@ -519,13 +529,13 @@ class App(ttk.Frame):
             frame,
             height=10,
             style="Treeview",
-            columns=("startt","endt","startl","endl","startw","endw","easing","next")
+            columns=("startt","endt","startl","endl","startw","endw","easing","next","div")
             )
         frame.table.grid(row=0, column=0,padx=0, sticky="nw",rowspan=9)
         frame.table.bind("<Button-1>",self.Table_Update)
-        namelist=["开始时间","结束时间","开始位置","结束位置","开始宽度","结束宽度","缓动","连接序号"]
+        namelist=["开始时间","结束时间","开始位置","结束位置","开始宽度","结束宽度","缓动","连接序号","启用间隔"]
         
-        for i in range(8):
+        for i in range(9):
             frame.table.heading(frame.table["columns"][i],text=namelist[i])
 
         for i in frame.table["columns"]:
@@ -582,8 +592,8 @@ class App(ttk.Frame):
         frame.commitbutton=ttk.Button(frame,text="生成",width=15,command=self.HOLD_EDITER)
         frame.commitbutton.grid(row=13,column=1,columnspan=2,pady=1)
 
-        frame.output = Text(frame,width=77,height=9)
-        frame.output.insert('end','Output.')
+        frame.output = Text(frame,width=85,height=9)
+        frame.output.insert('end','正在飞往日本,日Marvelous的🐎.')
         frame.output.grid(row=10,column=0,rowspan=5,pady=1) 
 
         frame.density_label = ttk.Label(frame,text="启用间隔:")
@@ -613,6 +623,8 @@ class App(ttk.Frame):
             self.hold_editer.easing_text.set(item['values'][6])
             self.hold_editer.next_text.delete('0.0','end')
             self.hold_editer.next_text.insert('0.0',item['values'][7])
+            self.hold_editer.density_text.delete('0.0','end')
+            self.hold_editer.density_text.insert('0.0',item['values'][8])
 
     def Hold_Add(self):
         number = self.hold_editer.number_text.get('0.0','end').strip()
@@ -624,7 +636,8 @@ class App(ttk.Frame):
         endw = self.hold_editer.endw_text.get('0.0','end').strip()
         easing = self.hold_editer.easing_text.get().strip()
         next = self.hold_editer.next_text.get('0.0','end').strip()
-        self.hold_editer.table.insert("",tk.END,text=number,values=(startt,endt,startl,endl,startw,endw,easing,next))
+        div = self.hold_editer.density_text.get('0.0','end').strip()
+        self.hold_editer.table.insert("",tk.END,text=number,values=(startt,endt,startl,endl,startw,endw,easing,next,div))
         
     def Hold_Delete(self):
         selected_items = self.hold_editer.table.selection()
@@ -642,19 +655,19 @@ class App(ttk.Frame):
         easing = self.hold_editer.easing_text.get().strip()
         next = self.hold_editer.next_text.get('0.0','end').strip()
         selected_items = self.hold_editer.table.selection()
+        div = self.hold_editer.density_text.get('0.0','end').strip()
         for item in selected_items:
-            self.hold_editer.table.item(item,text=number,values=(startt,endt,startl,endl,startw,endw,easing,next))
+            self.hold_editer.table.item(item,text=number,values=(startt,endt,startl,endl,startw,endw,easing,next,div))
 
     def HOLD_EDITER(self):
         output=[]
         holdlist=[]
         holdgroup={}
-        div=int(self.hold_editer.density_text.get('0.0','end').strip())
         items = self.hold_editer.table.get_children()
         for item in items:
             hold=[]
-            hold.append(self.hold_editer.table.item(item)['text'])
-            for i in range(8):
+            hold.append(self.hold_editer.table.item(item)['text'])#序号
+            for i in range(9):
                 hold.append(str(self.hold_editer.table.item(item)['values'][i]))
             holdlist.append(hold)
 
@@ -712,7 +725,7 @@ class App(ttk.Frame):
                     if i == 0 or i == len(holddetailmap)-1:
                         flag=1
                         lastflagpoint=holddetailmap[i][1]
-                    elif locdistance(holddetailmap[i][1],lastflagpoint)>= div:
+                    elif locdistance(holddetailmap[i][1],lastflagpoint) >= int(hold[9]):
                         flag=1
                         lastflagpoint=holddetailmap[i][1]
                     
@@ -732,15 +745,16 @@ class App(ttk.Frame):
 
         self.hold_editer.output.delete('0.0','end')
         self.hold_editer.output.insert('0.0','\n'.join(output))
+################################################################################################
         
 
 if __name__ == "__main__":
     mainframe = tk.Tk()
     mainframe.title("WACCA Tools")
     mainframe.iconbitmap("resource/wacca reverse.ico")
-    mainframe.geometry('685x475')
+    mainframe.geometry('740x475')
     #mainframe.maxsize(625,475)
-    mainframe.minsize(685,475)
+    mainframe.minsize(740,475)
 
     # Simply set the theme
     mainframe.tk.call("source", "azure.tcl")

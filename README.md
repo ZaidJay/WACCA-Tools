@@ -3,11 +3,11 @@ This is a tool for WACCA Fanmade Chart
 
 这是一个WACCA自制谱面的工具
 
-## Hold Divider / Hold切分
+## Hold Eidter / Hold 编辑
 
-It can help you to divide the hold to make it looks more smooth
+It can help you to draw a continuous easing hold
 
-可以帮助你把hold切成多分让其看上去更光滑
+可以帮助画一个连贯的，自选缓动的hold
 
 ## Mirror / 镜像
 
@@ -21,8 +21,8 @@ It can help you change the time and number of the object
 
 可以帮助你修改物件的延迟与编号
 
-## Hold Eidter / Hold 编辑
+## Transit / 转换
 
-It can help you to draw a continuous easing hold
+It can help you transit the location of the notes
 
-可以帮助画一个连贯的，自选缓动的hold
+可以帮助你改变物件的位置

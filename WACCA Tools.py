@@ -68,7 +68,10 @@ class App(ttk.Frame):
 
         self.bind_all('<KeyPress>',self.listen_keyboard)
         self.setup_widgets()
-
+#test
+#        self.hold_editer.table.insert("",tk.END,text=1766,values=("4 0/12","4 3/12","30","20","15","15","OutCubic","1","15"))
+#        self.hold_editer.table.insert("",tk.END,text=1,values=("4 3/12","4 6/12","20","40","15","15","InCubic","2","15"))
+#        self.hold_editer.table.insert("",tk.END,text=2,values=("4 6/12","4 10/12","40","55","15","15","OutCubic","","15"))
         
     #部署物件
     def setup_widgets(self):
@@ -261,88 +264,103 @@ class App(ttk.Frame):
         holdlist=[]
         holdgroup={}
         items = self.hold_editer.table.get_children()
-        try:
-            for item in items:
-                hold=[]
-                hold.append(self.hold_editer.table.item(item)['text'])#序号
-                for i in range(9):
-                    hold.append(str(self.hold_editer.table.item(item)['values'][i]))
-                holdlist.append(hold)
+        # try:
+        for item in items:
+            hold=[]
+            hold.append(str(self.hold_editer.table.item(item)['text']))#序号
+            for i in range(9):
+                hold.append(str(self.hold_editer.table.item(item)['values'][i]))
+            holdlist.append(hold)
 
-            number = int(holdlist[0][0])
+        number = int(holdlist[0][0])
 
-            holdlist.sort(reverse=True)
-            while len(holdlist):
-                if holdlist[0][8] == "":
-                    holdgroup[holdlist[0][0]] = []
-                    holdgroup[holdlist[0][0]].append(holdlist.pop(0))
-                else:
-                    if holdlist[0][8] in holdgroup.keys():
-                        holdgroup[holdlist[0][8]].insert(0,holdlist[0])
-                        holdgroup[holdlist[0][0]]=holdgroup.pop(holdlist[0][8])
-                        holdlist.pop(0)
-                    else:
-                        holdgroup[holdlist[0][0]] = []
-                        holdgroup[holdlist[0][0]].append(holdlist.pop(0))
-            holdlist.clear()
-
-            for i,holdlist in holdgroup.items():
-                for h in range(len(holdlist)):
-                    hold=holdlist[h]
-                    sb,st=hold[1].split(" ")
-                    st_a,st_b=st.split("/")
-                    sb,st_a,st_b=int(sb),int(st_a),int(st_b)
-                    if st_a == st_b and st_b == 0: st_b=1
-                    st=sb*1920+1920*(st_a/st_b)
-                        
-                    eb,et=hold[2].split(" ")
-                    et_a,et_b=et.split("/")
-                    eb,et_a,et_b=int(eb),int(et_a),int(et_b)
-                    if et_a == et_b and et_b == 0: et_b=1
-                    et=eb*1920+1920*(et_a/et_b)
+        l = len(holdlist)
+        for i in range(l-1,-1,-1) :
+            if holdlist[i][8] == "":
+                holdgroup[holdlist[i][0]] = []
+                holdgroup[holdlist[i][0]].append(holdlist.pop(i))
+        loopflag=0
+        while len(holdlist):
+            l = len(holdlist)
+            loopflag=1
+            for i in range(l-1,-1,-1):
+                if holdlist[i][8] in holdgroup.keys():
+                    holdgroup[holdlist[i][8]].insert(0,holdlist[i])
+                    holdgroup[holdlist[i][0]]=holdgroup.pop(holdlist[i][8])
+                    holdlist.pop(i)
+                    loopflag=0
+            if loopflag == 1:
+                for i in range(l-1,-1,-1):
+                    holdgroup[holdlist[i][0]] = []
+                    holdgroup[holdlist[i][0]].append(holdlist.pop(i))
+        deletelist=[]
+        for key,value in holdgroup.items():
+            if value[-1][8] in holdgroup.keys():
+                holdgroup[value[-1][8]]=value+holdgroup[value[-1][8]]
+                holdgroup[value[-1][0]]=holdgroup[value[-1][8]]
+                deletelist.append(value[-1][8])
+        for i in deletelist:
+            holdgroup.pop(i)
+                
+        
+        holdlist.clear()
+        for i,holdlist in holdgroup.items():
+            for h in range(len(holdlist)):
+                hold=holdlist[h]
+                sb,st=hold[1].split(" ")
+                st_a,st_b=st.split("/")
+                sb,st_a,st_b=int(sb),int(st_a),int(st_b)
+                if st_a == st_b and st_b == 0: st_b=1
+                st=sb*1920+1920*(st_a/st_b)
                     
-                    sl,el,sw,ew=int(hold[3]),int(hold[4]),int(hold[5]),int(hold[6])
-                    easing = 'ease'+hold[7]
-                    holddetailmap=[]
-                    dl=el-sl;dw=ew-sw
-                    temploc=1
-                    if abs(dl)>=abs(dw) : temploc=1
-                    else: temploc=2
-                    now=-114514
-                    for i in range(int(st),int(et)+1):
-                        holddetail = [i,sl+int(easings.calculate(0,el-sl,(i-st)/(et-st),easing)),sw+int(easings.calculate(0,ew-sw,(i-st)/(et-st),easing))]
-                        if holddetail[temploc] == now and i != int(et): continue
-                        else: holddetailmap.append(holddetail); now = holddetail[temploc]
+                eb,et=hold[2].split(" ")
+                et_a,et_b=et.split("/")
+                eb,et_a,et_b=int(eb),int(et_a),int(et_b)
+                if et_a == et_b and et_b == 0: et_b=1
+                et=eb*1920+1920*(et_a/et_b)
+                
+                sl,el,sw,ew=int(hold[3]),int(hold[4]),int(hold[5]),int(hold[6])
+                easing = 'ease'+hold[7]
+                holddetailmap=[]
+                dl=el-sl;dw=ew-sw
+                temploc=1
+                if abs(dl)>=abs(dw) : temploc=1
+                else: temploc=2
+                now=-114514
+                for i in range(int(st),int(et)+1):
+                    holddetail = [i,sl+int(easings.calculate(0,el-sl,(i-st)/(et-st),easing)),sw+int(easings.calculate(0,ew-sw,(i-st)/(et-st),easing))]
+                    if holddetail[temploc] == now and i != int(et): continue
+                    else: holddetailmap.append(holddetail); now = holddetail[temploc]
 
-                    lastflagpoint=0
-                    for i in range(len(holddetailmap)):
-                        flag=0
-                        type=10
-                        if i == 0 and h == 0: type=9
-                        if i == len(holddetailmap)-1 and h != len(holdlist) - 1: continue
-                        if i == 0 or i == len(holddetailmap)-1:
-                            flag=1
-                            lastflagpoint=holddetailmap[i][1]
-                        elif locdistance(holddetailmap[i][1],lastflagpoint) >= int(hold[9]):
-                            flag=1
-                            lastflagpoint=holddetailmap[i][1]
-                        
+                lastflagpoint=0
+                for i in range(len(holddetailmap)):
+                    flag=0
+                    type=10
+                    if i == 0 and h == 0: type=9
+                    if i == len(holddetailmap)-1 and h != len(holdlist) - 1: continue
+                    if i == 0 or i == len(holddetailmap)-1:
+                        flag=1
+                        lastflagpoint=holddetailmap[i][1]
+                    elif locdistance(holddetailmap[i][1],lastflagpoint) >= int(hold[9]):
+                        flag=1
+                        lastflagpoint=holddetailmap[i][1]
+                    
 
-                        beat,tick = time_add(0,0,0,holddetailmap[i][0])
-                        loc = holddetailmap[i][1]%60
-                        width = holddetailmap[i][2]
-                        event=1
-                        if hold[8] == "" and i == len(holddetailmap)-1:
-                            text="{:>4s} {:>4s} {:>4s} {:>4s} {:>4s} {:>4s} {:>4s} {:>4s}".format(str(beat),str(tick),str(event),str(11),str(number),str(loc),str(width),str(flag))
-                        else:
-                            text="{:>4s} {:>4s} {:>4s} {:>4s} {:>4s} {:>4s} {:>4s} {:>4s} {:>4s}".format(str(beat),str(tick),str(event),str(type),str(number),str(loc),str(width),str(flag),str(number+1))
-                        number=number+1
-                        output.append(text)
+                    beat,tick = time_add(0,0,0,holddetailmap[i][0])
+                    loc = holddetailmap[i][1]%60
+                    width = holddetailmap[i][2]
+                    event=1
+                    if hold[8] == "" and i == len(holddetailmap)-1:
+                        text="{:>4s} {:>4s} {:>4s} {:>4s} {:>4s} {:>4s} {:>4s} {:>4s}".format(str(beat),str(tick),str(event),str(11),str(number),str(loc),str(width),str(flag))
+                    else:
+                        text="{:>4s} {:>4s} {:>4s} {:>4s} {:>4s} {:>4s} {:>4s} {:>4s} {:>4s}".format(str(beat),str(tick),str(event),str(type),str(number),str(loc),str(width),str(flag),str(number+1))
+                    number=number+1
+                    output.append(text)
 
-                    holddetailmap.clear()
-        except:
-            output.clear()
-            output.append("Error!")
+                holddetailmap.clear()
+        # except:
+        #     output.clear()
+        #     output.append("Error!")
 
         self.hold_editer.output.delete('0.0','end')
         self.hold_editer.output.insert('0.0','\n'.join(output))

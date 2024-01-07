@@ -349,7 +349,7 @@ class App(ttk.Frame):
                         loc = holddetailmap[i][1]%60
                         width = holddetailmap[i][2]
                         event=1
-                        if hold[8] == "" or i == len(holddetailmap)-1:
+                        if  i == len(holddetailmap)-1 :
                             text="{:>4s} {:>4s} {:>4s} {:>4s} {:>4s} {:>4s} {:>4s} {:>4s}".format(str(beat),str(tick),str(event),str(11),str(number),str(loc),str(width),str(flag))
                         else:
                             text="{:>4s} {:>4s} {:>4s} {:>4s} {:>4s} {:>4s} {:>4s} {:>4s} {:>4s}".format(str(beat),str(tick),str(event),str(type),str(number),str(loc),str(width),str(flag),str(number+1))
